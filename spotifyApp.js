@@ -55,3 +55,22 @@
 })(jQuery);
 
 $("#timeline-1").timeline();
+
+
+
+function sidebar_open() {
+  document.getElementById("timeline-1").style.marginLeft = "25%";
+  document.getElementById("timeline-1").style.width = "75%";
+  document.getElementById("sidenav").style.display = "block";
+  // document.getElementById("openNav").style.display = 'none';
+
+}
+
+
+function sidebar_close() {
+  document.getElementById("timeline-1").style.marginLeft = "0%";
+  document.getElementById("timeline-1").style.width = "100%";
+  document.getElementById("sidenav").style.display = "none";
+  document.getElementById("sidenav").style.width = "0%";
+  // document.getElementById("openNav").style.display = "inline-block";
+}

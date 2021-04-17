@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700i" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="timelineStyles.css">
+    <link rel="stylesheet" href="modalStyles.css">
 </head>
 
 <body>
@@ -27,13 +28,14 @@
     <div class="timeline">
       <div class="timeline-item" data-text="Feeling: Happy" >
        <div class="timeline__content"><img class="timeline__img" />
-         <h2 class="timeline__content-title">4/7/2021</h2>
+         <button id = "myBtn" class = "btn timeline__content-title" > 4/7/2021 </button>
+         <!-- <h2 class="timeline__content-title">4/7/2021</h2> -->
          <p class="timeline__content-desc"> Songs most indicative of your mood included: </p>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Melodramatic">
        <div class="timeline__content"><img class="timeline__img"/>
-         <h2 class="timeline__content-title">4/6/2021</h2>
+         <button id = "myBtn" class = "btn timeline__content-title" > 4/6/2021 </button>
          <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
        </div>
       </div>
@@ -86,6 +88,16 @@
 </div>
 
 
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p>Some text in the Modal..</p>
+  </div>
+
+</div>
+
 
 <div class="about-section">
   <h1>About Us Page</h1>
@@ -93,35 +105,7 @@
   <p>Resize the browser window to see that this page is responsive by the way.</p>
 </div>
 
-  <!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
 
-  <div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-          <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-
-    </div>
-  </div> -->
-
-
-<!-- Modal Section -->
-<!-- <div class="bg-modal">
-  <div class="modal-content">
-  <p> Here is some data, and here is an explanation of your data!</p>
-  </div>
-
-</div> -->
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src = "spotifyApp.js"></script>

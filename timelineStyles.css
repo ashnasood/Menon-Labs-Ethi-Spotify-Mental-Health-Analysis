@@ -135,9 +135,9 @@
 .timeline-header {
   width: 100%;
   text-align: center;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
   position: absolute;
-  top: 0;
+  top: 10px;
 }
 .timeline-header__title {
   color: #fff;

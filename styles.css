@@ -5,7 +5,7 @@
 
 body {
 	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-	background-size: 400% 400%;
+	background-size: 5000% 5000%;
 	animation: gradient 15s ease infinite;
 }
 
@@ -28,15 +28,21 @@ body {
   border: solid;
   border-color: white;
   color: white;
-  padding: 5px 12px;
+  padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-family: Helvetica;
   position:relative;
-  top: 100px;
-  font-size: 16px;
-  left: 46.5%;
+  width: 10%;
+  top: 500px;
+  font-size: 1.5em;
+  left: 42.8%;
+}
+
+.active, .button:hover {
+  top: 500px;
+  background-color: #142882;;
 }
 
 .backButton{
@@ -53,6 +59,10 @@ body {
   position:absolute;
   font-size: 16px;
   z-index: 9;
+}
+
+.active, .backButton:hover {
+  background-color: #142882;;
 }
 
 

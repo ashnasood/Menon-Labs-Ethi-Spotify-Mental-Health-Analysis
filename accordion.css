@@ -14,7 +14,7 @@
   top: 200px;
   left: 25%;
   font-size: 1.5em;
-  font-family: Helvetica;
+  font-family: 'Oswald', sans-serif;
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
@@ -41,17 +41,17 @@
 /* Style the accordion panel. Note: hidden by default */
 .panel {
   background-color: white;
-  font-family: Helvetica;
+  font-family: 'Oswald', sans-serif;
   display: none;
   overflow: hidden;
   width: 50%;
   position: relative;
   left: 25%;
   top: 200px;
-
 }
 
 .panelText {
-  font-family: Helvetica;
+  font-family: 'Oswald', sans-serif;
   font-size: 20px;
+  text-align: center;
 }

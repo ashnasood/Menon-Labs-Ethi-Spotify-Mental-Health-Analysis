@@ -22,29 +22,6 @@ body {
 	}
 }
 
-.button{
-  display: block;
-  background-color: transparent; /* Green */
-  border: solid;
-  border-color: white;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-family: Helvetica;
-  position:relative;
-  width: 10%;
-  top: 500px;
-  font-size: 1.5em;
-  left: 42.8%;
-}
-
-.active, .button:hover {
-  top: 500px;
-  background-color: #142882;;
-}
-
 .backButton{
   background-color: transparent; /* Green */
   border: solid;
@@ -54,7 +31,7 @@ body {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-family: Helvetica;
+  font-family: 'Oswald', sans-serif;
   /* border-radius: 50%; */
   position:absolute;
   font-size: 16px;
@@ -75,13 +52,6 @@ body {
 
 #parent{
   position: relative;
-}
-
-.about-section {
-  padding: 150px;
-  text-align: center;
-  background-color: #1b2740;
-  color: white;
 }
 
 .btn {

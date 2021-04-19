@@ -1,1 +1,23 @@
+.button{
+  display: block;
+  background-color: transparent; /* Green */
+  border: solid;
+  border-color: white;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-family: 'Oswald', sans-serif;
+  position:relative;
+  width: 10%;
+  top: 500px;
+  font-size: 1.5em;
+  left: 42.8%;
+  transition: 0.4s
+}
 
+.active, .button:hover {
+  top: 500px;
+  background-color: #142882;
+}s

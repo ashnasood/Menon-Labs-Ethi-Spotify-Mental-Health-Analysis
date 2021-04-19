@@ -11,12 +11,9 @@ class ListeningSession {
     }
 }
 
-
-
-
-function getHistory() {
+function getHistory(folderPath) {
     try {
-        const files = fs.readdirSync('test_data', throwErrorCb);
+        const files = fs.readdirSync(folderPath, throwErrorCb);
 
         // find streaming history files
         const historyFiles = [];
@@ -29,7 +26,7 @@ function getHistory() {
         // add all streaming history entries into giant array
         let history = [];
         for (const file of historyFiles) {
-            let data_str = fs.readFileSync('test_data/'+file, {encoding: 'utf8'})
+            let data_str = fs.readFileSync(folderPath+'/'+file, {encoding: 'utf8'})
             const arr = JSON.parse(data_str);
             history = history.concat(arr);
         }
@@ -87,7 +84,7 @@ function getListeningSessions(history) {
     return sessions;
 }
 
-history = getHistory();
+history = getHistory('test_data');
 console.log('history read!');
 sessions = getListeningSessions(history);
 console.log('sessions parsed!');

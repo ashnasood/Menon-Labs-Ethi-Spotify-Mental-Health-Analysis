@@ -1,4 +1,5 @@
 const fs = require('fs');
+const readline = require('readline');
 
 const throwErrorCb = (err) => {if (err) throw err;};
 
@@ -84,11 +85,17 @@ function getListeningSessions(history) {
     return sessions;
 }
 
-history = getHistory('test_data');
+history = getHistory(process.argv[2]);
 console.log('history read!');
+console.log(`${history.length} songs in history`);
+console.log();
+
 sessions = getListeningSessions(history);
 console.log('sessions parsed!');
+console.log(`${sessions.length} valid sessions`);
+console.log();
 
-sessionsStr = JSON.stringify(sessions);
-fs.writeFileSync('sessions.json', sessionsStr);
+
+sessionsStr = JSON.stringify(sessions, null, 4);
+fs.writeFileSync(process.argv[3], sessionsStr);
 console.log('file written!');

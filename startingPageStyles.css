@@ -19,5 +19,5 @@
 
 .active, .button:hover {
   top: 500px;
-  background-color: #142882;
-}s
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+}

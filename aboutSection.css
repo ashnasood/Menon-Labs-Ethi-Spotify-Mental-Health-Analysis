@@ -1,8 +1,13 @@
 .about-section {
   padding: 100px;
   text-align: center;
-  background-color: inherit;
   color: white;
   border: solid;
   font-family: 'Oswald', sans-serif;
+}
+
+.aboutSectionContainer {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 200% 200%;
+
 }

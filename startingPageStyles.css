@@ -13,11 +13,13 @@
   width: 10%;
   top: 500px;
   font-size: 1.5em;
-  left: 42.8%;
+  left: 43%;
   transition: 0.4s
 }
 
 .active, .button:hover {
   top: 500px;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  animation: gradient 15s ease infinite;
+  background-size: 5000% 5000%;
 }

@@ -6,7 +6,7 @@
     <title>Document</title>
     <link href="https://fonts.googleapis.com/css?family=Oswald&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700i" rel="stylesheet">
-    <link rel="stylesheet" href="spotifyAppstyles.css">
+    <link rel="stylesheet" href="spotifyAppStyles.css">
     <link rel="stylesheet" href="timelineStyles.css">
     <link rel="stylesheet" href="modalStyles.css">
     <link rel="stylesheet" href="aboutSection.css">
@@ -24,59 +24,47 @@
     <div class="timeline">
       <div class="timeline-item" data-text="Feeling: Happy" >
        <div class="timeline__content"><img class="timeline__img" />
-         <button id = "myBtn" class = "btn timeline__content-title" > 4/7/2021 </button>
-         <!-- <h2 class="timeline__content-title">4/7/2021</h2> -->
-         <p class="timeline__content-desc"> Songs most indicative of your mood included: </p>
+         <button id = "myBtn" class = "btn timeline__content-title" > Session on 4/7/2021 </button>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Melodramatic">
        <div class="timeline__content"><img class="timeline__img"/>
-         <button id = "myBtn" class = "btn timeline__content-title" > 4/6/2021 </button>
-         <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
+         <button id = "myBtn" class = "btn timeline__content-title" > Session on 4/6/2021 </button>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Sad">
        <div class="timeline__content"><img class="timeline__img" />
-         <h2 class="timeline__content-title">4/5/2021</h2>
-         <p class="timeline__content-desc"> Songs most indicative of your mood included: </p>
+         <h2 class="timeline__content-title">Session on 4/6/2021</h2>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Anxious">
        <div class="timeline__content"><img class="timeline__img" />
-         <h2 class="timeline__content-title">4/4/2021</h2>
-         <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
+         <h2 class="timeline__content-title">Session on 4/4/2021</h2>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Confident">
        <div class="timeline__content"><img class="timeline__img" />
-         <h2 class="timeline__content-title">4/3/2021</h2>
-         <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
+         <h2 class="timeline__content-title">Session on 4/3/2021</h2>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Sad">
        <div class="timeline__content"><img class="timeline__img" />
-         <h2 class="timeline__content-title">4/2/2021</h2>
-         <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
+         <h2 class="timeline__content-title">Session on 4/2/2021</h2>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Happy">
        <div class="timeline__content"><img class="timeline__img"/>
-         <h2 class="timeline__content-title">4/1/2021</h2>
-         <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
+         <h2 class="timeline__content-title">Session on 4/1/2021</h2>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Anxious">
        <div class="timeline__content"><img class="timeline__img"/>
-         <h2 class="timeline__content-title">3/31/2021</h2>
-         <p class="timeline__content-desc">
-           Songs most indicative of your mood included:
-         </p>
+         <h2 class="timeline__content-title">Session on 3/31/2021</h2>
        </div>
       </div>
       <div class="timeline-item" data-text="Feeling: Melodramatic">
        <div class="timeline__content"><img class="timeline__img" />
-         <h2 class="timeline__content-title">3/30/2021</h2>
-         <p class="timeline__content-desc">Songs most indicative of your mood included: </p>
+         <h2 class="timeline__content-title">Session on 3/30/2021</h2>
        </div>
       </div>
     </div>
@@ -87,24 +75,65 @@
   <div class="modal-content">
     <div class="modal-header">
       <span class="close">&times;</span>
-      <h2>Modal Header</h2>
+      <h2>Your Mood For This Session: Happy</h2>
     </div>
     <div class="modal-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Song</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Happy</td>
+            <td>Pharrell Williams</td>
+            <td>Happy</td>
+          </tr>
+          <tr>
+            <td>Happy</td>
+            <td>Pharrell Williams</td>
+            <td>Happy</td>
+          </tr>
+          <tr>
+            <td>Happy</td>
+            <td>Pharrell Williams</td>
+            <td>Happy</td>
+          </tr>
+          <tr>
+            <td>Happy</td>
+            <td>Pharrell Williams</td>
+            <td>Happy</td>
+          </tr>
+          <tr>
+            <td>Happy</td>
+            <td>Pharrell Williams</td>
+            <td>Happy</td>
+          </tr>
+          <tr>
+            <td>Happy</td>
+            <td>Pharrell Williams</td>
+            <td>Happy</td>
+          </tr>
+          <tr>
+            <td>Sad</td>
+            <td>XXXTentacion</td>
+            <td>Sad</td>
+          </tr>
+          <tr>
+            <td>Sad</td>
+            <td>XXXTentacion</td>
+            <td>Sad</td>
+          </tr>
+        </tbody>
+  </table>
 
-      <div class="piechart"> Song Distribution by Emotion</div>
-      <p>Percentage of Happy Songs Listened to: 20%</p>
-      &nbsp;
-      <p>Percentage of Sad Songs Listened to: 30%</p>
-      &nbsp;
-      <p>Percentage of Angry Songs Listened to: 40%</p>
-      &nbsp;
-      <p>Percentage of Romantic Songs Listened to: 10%</p>
-      &nbsp;
-      <p>Your Overall Emotion: Angry</p>
+      <div class="piechart"> </div>
     </div>
   </div>
   </div>
-
 </div>
 
 <div id="aboutSection" class="aboutSectionContainer">
@@ -114,7 +143,10 @@
   </div>
 </div>
 
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src = "spotifyApp.js"></script>
+  <script src = "chart.js"></script>
 </body>
 </html>

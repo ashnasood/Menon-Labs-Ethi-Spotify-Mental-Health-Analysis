@@ -11,7 +11,7 @@
   border-color: white;
   outline: none;
   transition: 0.4s;
-  top: 200px;
+  top: 450px;
   left: 25%;
   font-size: 1.5em;
   font-family: 'Oswald', sans-serif;
@@ -19,7 +19,7 @@
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active, .accordion:hover {
-  position: relative;
+  position: absolute;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   animation: gradient 15s ease infinite;
   background-size: 5000% 5000%;
@@ -28,7 +28,7 @@
 .accordion:after {
   position: relative;
   content: '\002B';
-  color: #777;
+  color: white;
   font-weight: bold;
   float: right;
   margin-left: 5px;
@@ -48,7 +48,7 @@
   width: 50%;
   position: relative;
   left: 25%;
-  top: 200px;
+  top: 540px;
 }
 
 .panelText {

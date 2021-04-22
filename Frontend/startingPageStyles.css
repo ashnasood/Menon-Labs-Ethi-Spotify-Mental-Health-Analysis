@@ -1,4 +1,29 @@
+body {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 5000% 5000%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0%
+     50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
 .button{
+  position: absolute;
   display: block;
   background-color: transparent; /* Green */
   border: solid;
@@ -9,17 +34,31 @@
   text-decoration: none;
   display: inline-block;
   font-family: 'Oswald', sans-serif;
-  position:relative;
   width: 10%;
-  top: 500px;
+  top: 90%;
   font-size: 1.5em;
   left: 43%;
   transition: 0.4s
 }
 
 .active, .button:hover {
-  top: 500px;
+  position: absolute;
+  top: 91%;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   animation: gradient 15s ease infinite;
   background-size: 5000% 5000%;
+}
+
+.gradient-card {
+    position: absolute;
+    padding: 40px;
+    width: 50%;
+    height: 60%;
+    top: 14%;
+    left: 22%;
+    border-radius: 1.5rem;
+    background-image: linear-gradient(150deg,#ff5160,#ff0073);
+    box-shadow: 1px 1px 3px 0 rgb(0 0 0 / 30%);
+    font-family: Inter,sans-serif;
+    color: #fff5f5;
 }

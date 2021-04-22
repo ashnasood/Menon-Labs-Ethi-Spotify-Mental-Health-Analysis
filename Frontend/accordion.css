@@ -1,6 +1,6 @@
 /* Style the buttons that are used to open and close the accordion panel */
 .accordion {
-  position: relative;
+  position: absolute;
   background-color: inherit;
   color: white;
   cursor: pointer;
@@ -11,10 +11,11 @@
   border-color: white;
   outline: none;
   transition: 0.4s;
-  top: 450px;
+  top: 87%;
   left: 25%;
   font-size: 1.5em;
   font-family: 'Oswald', sans-serif;
+  border-radius: 25px;
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
@@ -23,6 +24,7 @@
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   animation: gradient 15s ease infinite;
   background-size: 5000% 5000%;
+  top: 87.5%;
 }
 
 .accordion:after {
@@ -32,6 +34,7 @@
   font-weight: bold;
   float: right;
   margin-left: 5px;
+  border-radius: 25px;
 }
 
 .active:after {
@@ -41,14 +44,16 @@
 
 /* Style the accordion panel. Note: hidden by default */
 .panel {
+  position: absolute;
+  border-radius: 25px;
   background-color: white;
   font-family: 'Oswald', sans-serif;
   display: none;
   overflow: hidden;
   width: 50%;
-  position: relative;
   left: 25%;
-  top: 540px;
+  top: 96%;
+  border-bottom-width: 10px;
 }
 
 .panelText {

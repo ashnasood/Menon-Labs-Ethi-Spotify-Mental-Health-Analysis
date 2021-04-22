@@ -24,6 +24,7 @@ body {
 
 .button{
   position: absolute;
+  border-radius: 25px;
   display: block;
   background-color: transparent; /* Green */
   border: solid;
@@ -35,15 +36,16 @@ body {
   display: inline-block;
   font-family: 'Oswald', sans-serif;
   width: 10%;
-  top: 90%;
+  top: 76.5%;
   font-size: 1.5em;
   left: 43%;
   transition: 0.4s
+
 }
 
 .active, .button:hover {
   position: absolute;
-  top: 91%;
+  top: 77%;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   animation: gradient 15s ease infinite;
   background-size: 5000% 5000%;
@@ -53,7 +55,7 @@ body {
     position: absolute;
     padding: 40px;
     width: 50%;
-    height: 60%;
+    height: 50%;
     top: 14%;
     left: 22%;
     border-radius: 1.5rem;
@@ -61,4 +63,5 @@ body {
     box-shadow: 1px 1px 3px 0 rgb(0 0 0 / 30%);
     font-family: Inter,sans-serif;
     color: #fff5f5;
+    border: solid;
 }

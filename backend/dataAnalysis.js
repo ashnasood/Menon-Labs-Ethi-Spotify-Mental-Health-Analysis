@@ -1,9 +1,43 @@
 const fs = require('fs');
 const readline = require('readline');
+const {performance} = require('perf_hooks');
+const SpotifyWebApi = require('spotify-web-api-node');
+
+const spotifyApi = new SpotifyWebApi({
+    clientId: '69e1c0e4539041d7917c217c4b6f94cb',
+    clientSecret: 'ffd609f69b4940eca3ee212b75de03b5',
+});
+
+// Retrieve an access token.
+const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
+  function(data) {
+    console.log('The access token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
+
+    // Save the access token so that it's used in future calls
+    spotifyApi.setAccessToken(data.body['access_token']);
+  },
+  function(err) {
+    console.log('Something went wrong when retrieving an access token', err);
+  }
+);
+
 
 const throwErrorCb = (err) => {if (err) throw err;};
 
-const emotions = ['Heartbroken', 'Upbeat', 'Romantic', 'Cheerful', 'Rebellious', 'Calm', 'Powerful', 'Carefree', 'Party Music', 'Reflective', 'Energized', 'Warm', 'Sentimental', 'Chill', 'Exuberant']
+const emotions = [
+    'Heartbroken', 'Upbeat', 'Romantic', 'Cheerful', 'Rebellious', 'Calm', 
+    'Powerful', 'Carefree', 'Party', 'Reflective', 'Energized', 'Warm', 
+    'Sentimental', 'Chill', 'Exuberant'
+]
+const emptyEmotionFrequencies = function () {
+    const dict = {};
+    for (e of emotions)
+        dict[e] = 0;
+    return dict;
+}
+
+
 
 /**
  * @class ListeningSession utility object for all operations involving a session
@@ -32,7 +66,28 @@ class ListeningSession {
         this.size = songs.length;
         this.time = songs[0].endTime;
         this.songList = songs;
+        this.frequencies = emptyEmotionFrequencies();
     }
+
+    calculateEmotionFrequencies() {
+        this.unfoundIndices = [];
+        for (let i=0; i<this.songList.length; i++)
+        {
+            let e = emotionFromDatabase(this.songList[i]);
+            if (e) {
+                if (e === 'Party Music')
+                    e = 'Party';
+                this.frequencies[e] += 1;
+            }
+            else {
+                this.unfoundIndices.push(i);
+            }
+        }
+
+        return this.frequencies;
+    }
+
+    
 }
 
 /**
@@ -138,10 +193,43 @@ function getListeningSessions(history) {
     return sessions;
 }
 
+let dbSongs = [];
+const cmpSong = function (a, b) { 
+    return a.trackName.localeCompare(b.trackName) || a.artistName.localeCompare(b.artistName); 
+};
 
 function databaseInit() {
-    
+    data_str = fs.readFileSync('labeled_songs_records.json', {encoding: 'utf8'})
+    dbSongs = JSON.parse(data_str);
+    dbSongs.sort(cmpSong);
 }
+
+function emotionFromDatabase(song) {
+
+    const binarySearch = function (song, l, r) {
+        if (r < l || l < 0 || r > dbSongs.length)
+            return -1;
+
+        let mid = l + Math.floor((r-l)/2);
+        let cmp = cmpSong(song, dbSongs[mid]);
+
+        if (cmp === 0)
+            return mid;
+        else if (cmp > 0)
+            return binarySearch(song, mid+1, r);
+        else
+            return binarySearch(song, l, mid-1);
+    }
+
+    const index = binarySearch(song, 0, dbSongs.length);
+    if (index === -1)
+        return "";
+    else
+        return dbSongs[index].emotion;
+}
+/*
+databaseInit();
+console.log('database initialized!\n');
 
 history = getHistory(process.argv[2]);
 console.log('history read!');
@@ -150,10 +238,26 @@ console.log();
 
 sessions = getListeningSessions(history);
 console.log('sessions parsed!');
-console.log(`${sessions.length} valid sessions`);
-console.log();
+console.log(`${sessions.length} valid sessions\n`);
 
+let totalSongs = 0;
+let unfoundSongs = 0;
+for (session of sessions) {
+    session.calculateEmotionFrequencies();
+    totalSongs += session.size;
+    unfoundSongs += session.unfoundIndices.length;
+}
+console.log(`emotion frequencies calculated!\n`);
+console.log(`${unfoundSongs} of ${totalSongs} not found`);
+*/
+Promise.resolve(accesTokenPromise).then( () => {
+    spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
+      function(data) {
+        console.log('Artist albums', data.body);
+      },
+      function(err) {
+        console.error(err);
+      }
+    );
+});
 
-sessionsStr = JSON.stringify(sessions, null, 4);
-fs.writeFileSync(process.argv[3], sessionsStr);
-console.log('file written!');

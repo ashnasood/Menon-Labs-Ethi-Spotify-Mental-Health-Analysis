@@ -1,0 +1,17 @@
+.section-footer {
+  padding: 150px;
+  text-align: center;
+  color: white;
+  font-family: 'Oswald', sans-serif;
+  display: flex;
+  background: linear-gradient(-45deg, #162794, #000000);
+  background-size: 5000% 5000%;
+  animation: gradient 30s ease infinite;
+  border-top: solid;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 30px;
+}

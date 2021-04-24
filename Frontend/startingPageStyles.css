@@ -30,13 +30,13 @@ body {
   border: solid;
   border-color: white;
   color: white;
-  padding: 10px 20px;
+  padding: 0.7% 2%;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-family: 'Oswald', sans-serif;
   width: 10%;
-  top: 76.5%;
+  top: 76%;
   font-size: 1.5em;
   left: 43%;
   transition: 0.4s
@@ -45,7 +45,7 @@ body {
 
 .active, .button:hover {
   position: absolute;
-  top: 77%;
+  top: 76.5%;
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   animation: gradient 15s ease infinite;
   background-size: 5000% 5000%;
@@ -53,7 +53,7 @@ body {
 
 .gradient-card {
     position: absolute;
-    padding: 40px;
+    padding: 2%;
     width: 50%;
     height: 50%;
     top: 14%;

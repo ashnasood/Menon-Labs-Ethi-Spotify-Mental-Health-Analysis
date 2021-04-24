@@ -3,7 +3,7 @@
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  padding-top: 10%; /* Location of the box */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -74,8 +74,8 @@
   position: absolute;
   left: 45%;
   top: 16%;
-  width: 400px;
-  height: 400px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background-image: conic-gradient(
     blue 70deg,

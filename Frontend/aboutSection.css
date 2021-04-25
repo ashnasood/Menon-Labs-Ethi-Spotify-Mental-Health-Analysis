@@ -7,7 +7,6 @@
   font-family: 'Oswald', sans-serif;
   display: flex;
   background: linear-gradient(45deg, #089cd1, white);
-  border-top: solid;
 }
 
 .column {

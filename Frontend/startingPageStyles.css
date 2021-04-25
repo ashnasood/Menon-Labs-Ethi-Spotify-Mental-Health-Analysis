@@ -64,4 +64,29 @@ body {
     font-family: Inter,sans-serif;
     color: #fff5f5;
     border: solid;
+    overflow: auto;
+}
+
+.intro-text {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2em;
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: inherit;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: white;
 }

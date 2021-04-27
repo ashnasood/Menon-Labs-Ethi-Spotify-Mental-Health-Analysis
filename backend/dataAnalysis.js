@@ -13,6 +13,7 @@ const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
   function(data) {
     console.log('The access token expires in ' + data.body['expires_in']);
     console.log('The access token is ' + data.body['access_token']);
+  console.log(data);
 
     // Save the access token so that it's used in future calls
     spotifyApi.setAccessToken(data.body['access_token']);
@@ -26,9 +27,8 @@ const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
 const throwErrorCb = (err) => {if (err) throw err;};
 
 const emotions = [
-    'Heartbroken', 'Upbeat', 'Romantic', 'Cheerful', 'Rebellious', 'Calm', 
-    'Powerful', 'Carefree', 'Party', 'Reflective', 'Energized', 'Warm', 
-    'Sentimental', 'Chill', 'Exuberant'
+    'Energetic', 'Chill', 'Vulnerable', 'Soothing', 'Wistful',
+    'Calm', 'Sentimental', 'Powerful', 'Upbeat'
 ]
 const emptyEmotionFrequencies = function () {
     const dict = {};
@@ -37,7 +37,20 @@ const emptyEmotionFrequencies = function () {
     return dict;
 }
 
-
+// from [Ramki Pitchala](https://medium.com/swlh/set-a-time-limit-on-async-actions-in-javascript-567d7ca018c2)
+async function fulfillWithTimeLimit(timeLimit, task, failureValue){
+    let timeout;
+    const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+            resolve(failureValue);
+        }, timeLimit)
+    });
+    const response = await Promise.race([task, timeoutPromise]);
+    if(timeout){ 
+        clearTimeout(timeout);
+    }
+    return response;
+}
 
 /**
  * @class ListeningSession utility object for all operations involving a session
@@ -67,9 +80,19 @@ class ListeningSession {
         this.time = songs[0].endTime;
         this.songList = songs;
         this.frequencies = emptyEmotionFrequencies();
+        this.unlabeledSongs = songs.length;
     }
 
-    calculateEmotionFrequencies() {
+    calculateEmotionsFromDatabase() {
+        for (const song of this.songList) {
+            let e = emotionFromDatabase(song);
+            if (e) {
+                this.frequencies[e] += 1;
+                song.emotion = e;
+                this.unlabeledSongs--;
+            }
+        }
+        /*
         this.unfoundIndices = [];
         for (let i=0; i<this.songList.length; i++)
         {
@@ -83,11 +106,62 @@ class ListeningSession {
                 this.unfoundIndices.push(i);
             }
         }
+        */
 
         return this.frequencies;
     }
 
-    
+    async emotionsFromSearch() {
+        for (const song of this.songList) {
+            if (!song.hasOwnProperty('emotion')) {
+                const id = await fulfillWithTimeLimit(300000, searchForId(song), '');
+                if (id) {
+                    song.id = id;
+                }
+            }
+        }
+
+        let ids = [];
+        for (const song of this.songList) {
+            if (song.hasOwnProperty('id'))
+                ids.push(song.id);
+        }
+
+
+        let features = [];
+
+        while (ids.length > 100) {
+            features = features.concat(await featuresFromIds(ids.slice(0, 100)));
+            ids = data.slice(100);
+        }
+        features = features.concat(await featuresFromIds(ids));
+
+
+        for (const song of this.songList) {
+            if (song.hasOwnProperty('id') && song.id === features[0].id) {
+                song.emotion = emotionFromFeatures(features[0]);
+                this.unlabeledSongs--;
+                this.frequencies[song.emotion]++;
+                features = features.slice(1);
+            }
+        }
+        /*
+        const songsToSearch = [];
+        for (index of this.unfoundIndices)
+            songsToSearch.push(this.songList(index));
+        this.unfoundIndices = [];
+
+        const ids = [];
+        for (let i=0; i < songsToSearch.length; i++) {
+            id = searchForId(songsToSearch[i]);
+            if (id)
+                ids.push(id);
+            else
+                this.unfoundIndices.push(i);
+        }
+        */
+
+    }
 }
 
 /**
@@ -198,8 +272,26 @@ const cmpSong = function (a, b) {
     return a.trackName.localeCompare(b.trackName) || a.artistName.localeCompare(b.artistName); 
 };
 
+const matchSong = function(songA, songB) {
+    const standardize = (s) => { return s.replace(/[""\\]/g, '').toLowerCase(); };
+
+    a = {trackName: standardize(songA.trackName), artistName: standardize(songA.artistName)};
+    b = {trackName: standardize(songB.trackName), artistName: standardize(songB.artistName)};
+
+    const isVersion = (lhs, rhs) => {
+        const flagWords = ['edition', 'remaster', 'edit', 'live', 'rerecord', 'feat.']
+        for (const word of flagWords) {
+            if (lhs.includes(word) || rhs.includes(word))
+                return lhs.includes(rhs) || rhs.includes(lhs);
+        }
+    };
+
+    return (a.artistName === b.artistName && (a.trackName === b.trackName || isVersion(a.trackName, b.trackName)));
+
+};
+
 function databaseInit() {
-    data_str = fs.readFileSync('labeled_songs_records.json', {encoding: 'utf8'})
+    data_str = fs.readFileSync('song_info.json', {encoding: 'utf8'})
     dbSongs = JSON.parse(data_str);
     dbSongs.sort(cmpSong);
 }
@@ -227,7 +319,96 @@ function emotionFromDatabase(song) {
     else
         return dbSongs[index].emotion;
 }
-/*
+
+idCache = {};
+
+async function searchForId(song) {
+    const query = `track:${song.trackName} artist:${song.artistName}`
+
+    if (idCache.hasOwnProperty(query))
+        return idCache[query];
+
+    try {
+        const data = await spotifyApi.searchTracks(query);
+
+        const result = data.body.tracks.items[0];
+        if (result) {
+            idCache[query] = result.id;
+            return result.id;
+        }
+        else {
+            idCache[query] = '';
+            return '';
+        }
+        /*
+        if (result === undefined) {
+            idCache[query] = "";
+            return "";
+        }
+
+        if (matchSong(song, {trackName: result.name, artistName: result.artists[0].name})) {
+            idCache[query] = result.id;
+            return result.id
+        }
+        else {
+            console.log('failed to find song:');
+            console.log(song);
+            console.log('found:');
+            console.log(result.name);
+            console.log(result.artists[0].name);
+
+            idCache[query] = "";
+            return "";
+        }
+        */
+
+    }
+    catch (error) {
+        if (error.statusCode === 429) {
+            const time = error.headers['Retry-After'] * 1000;
+            return setTimeout(() => { return searchForId(song); }, time);
+        }
+        else if (error.code === 'ECONNRESET') {
+            return setTimeout(() => { return searchForId(song); }, 1000);
+        }
+        else {
+            console.error(error);
+            return "";
+        }
+    }
+}
+
+
+async function featuresFromIds(arr) {
+    try {
+        const features = [];
+        const data = await spotifyApi.getAudioFeaturesForTracks(arr);
+        for (const info of data.body.audio_features) {
+            if (info)
+                features.push(info);
+        }
+
+        return features;
+    }
+    catch (error) {
+        if (error.statusCode === 429) {
+            const time = error.headers['Retry-After'] * 1000;
+            return setTimeout(() => { return featuresFromIds(arr); }, time);
+        }
+        else if (error.code === 'ECONNRESET') {
+            return setTimeout(() => { return featuresFromIds(arr); }, 1000);
+        }
+        else {
+            console.error(error);
+            featuresFromIds(arr);
+        }
+    }
+};
+
+function emotionFromFeatures(features) {
+    return emotions[Math.floor(Math.random()*emotions.length)];
+}
+
 databaseInit();
 console.log('database initialized!\n');
 
@@ -243,21 +424,15 @@ console.log(`${sessions.length} valid sessions\n`);
 let totalSongs = 0;
 let unfoundSongs = 0;
 for (session of sessions) {
-    session.calculateEmotionFrequencies();
+    session.calculateEmotionsFromDatabase();
     totalSongs += session.size;
-    unfoundSongs += session.unfoundIndices.length;
+    unfoundSongs += session.unlabeledSongs;
 }
 console.log(`emotion frequencies calculated!\n`);
 console.log(`${unfoundSongs} of ${totalSongs} not found`);
-*/
-Promise.resolve(accesTokenPromise).then( () => {
-    spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
-      function(data) {
-        console.log('Artist albums', data.body);
-      },
-      function(err) {
-        console.error(err);
-      }
-    );
-});
 
+Promise.resolve(accesTokenPromise).then( () => {
+    for (session of sessions.slice(1, 10)) {
+        session.emotionsFromSearch();
+    }
+});

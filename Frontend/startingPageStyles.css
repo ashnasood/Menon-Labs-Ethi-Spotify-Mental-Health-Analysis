@@ -26,7 +26,7 @@ body {
   position: absolute;
   border-radius: 25px;
   display: block;
-  background-color: transparent; /* Green */
+  background-color: transparent;
   border: solid;
   border-color: white;
   color: white;
@@ -52,22 +52,23 @@ body {
 }
 
 .gradient-card {
-    position: absolute;
-    padding: 2%;
-    width: 50%;
-    height: 50%;
-    top: 14%;
-    left: 22%;
-    border-radius: 1.5rem;
-    background-image: linear-gradient(150deg,#ff5160,#ff0073);
-    box-shadow: 1px 1px 3px 0 rgb(0 0 0 / 30%);
-    font-family: Inter,sans-serif;
-    color: #fff5f5;
-    border: solid;
-    overflow: auto;
+  position: absolute;
+  padding: 2%;
+  width: 50%;
+  height: 50%;
+  top: 14%;
+  left: 22%;
+  border-radius: 1.5rem;
+  background-image: linear-gradient(150deg,#ff5160,#ff0073);
+  box-shadow: 1px 1px 3px 0 rgb(0 0 0 / 30%);
+  font-family: Inter,sans-serif;
+  color: #fff5f5;
+  border: solid;
+  overflow: auto;
 }
 
 .intro-text {
+  text-align: center;
   font-family: 'Oswald', sans-serif;
   font-size: 2em;
 }

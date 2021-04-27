@@ -42,20 +42,22 @@
 
 .panel {
   position: absolute;
-  border-radius: 5px;
+  border-radius: 25px;
+  padding: 1%;
   background-image: linear-gradient(150deg,#ff5160,#ff0073);
   border: solid;
   border-color: white;
   font-family: 'Oswald', sans-serif;
   display: none;
   overflow: hidden;
-  width: 50%;
-  left: 25%;
-  top: 94.8%;
+  width: 48%;
+  left: 24.8%;
+  top: 95.1%;
 }
 
 .panelText {
   position: relative;
+  text-align: center;
   color: white;
   font-family: 'Oswald', sans-serif;
   font-size: 20px;

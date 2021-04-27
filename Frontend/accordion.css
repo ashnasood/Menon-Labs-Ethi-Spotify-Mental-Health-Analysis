@@ -46,19 +46,22 @@
 /* Style the accordion panel. Note: hidden by default */
 .panel {
   position: absolute;
-  border-radius: 25px;
-  background-color: white;
+  border-radius: 5px;
+  background-image: linear-gradient(150deg,#ff5160,#ff0073);
+  border: solid;
+  border-color: white;
   font-family: 'Oswald', sans-serif;
   display: none;
   overflow: hidden;
   width: 50%;
   left: 25%;
-  top: 96%;
-  border-bottom-width: 10px;
+  top: 94.8%;
 }
 
 .panelText {
+  position: relative;
+  color: white;
   font-family: 'Oswald', sans-serif;
   font-size: 20px;
-  text-align: center;
+  left: 0.3%;
 }

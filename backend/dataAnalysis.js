@@ -2,6 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 const {performance} = require('perf_hooks');
 const SpotifyWebApi = require('spotify-web-api-node');
+const knn_model = require('./KNN_Model.js');
 
 const spotifyApi = new SpotifyWebApi({
     clientId: '69e1c0e4539041d7917c217c4b6f94cb',
@@ -27,12 +28,13 @@ const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
 const throwErrorCb = (err) => {if (err) throw err;};
 
 const emotions = [
-    'Energetic', 'Chill', 'Vulnerable', 'Soothing', 'Wistful',
-    'Calm', 'Sentimental', 'Powerful', 'Upbeat'
+    'Calm', 'Chill', 'Energetic', 'Powerful', 'Sentimental',
+    'Soothing', 'Upbeat', 'Vulnerable', 'Wistful'
 ]
-const emptyEmotionFrequencies = function () {
+
+const emptyEmotionFrequencies = function (arr=emotions) {
     const dict = {};
-    for (e of emotions)
+    for (e of arr)
         dict[e] = 0;
     return dict;
 }
@@ -111,7 +113,7 @@ class ListeningSession {
         return this.frequencies;
     }
 
-    async emotionsFromSearch() {
+    async calculateEmotionsFromSearch() {
         for (const song of this.songList) {
             if (!song.hasOwnProperty('emotion')) {
                 const id = await fulfillWithTimeLimit(300000, searchForId(song), '');
@@ -145,6 +147,7 @@ class ListeningSession {
                 features = features.slice(1);
             }
         }
+
         /*
         const songsToSearch = [];
         for (index of this.unfoundIndices)
@@ -160,7 +163,60 @@ class ListeningSession {
                 this.unfoundIndices.push(i);
         }
         */
+    }
 
+    getDominantEmotion() {
+
+        // get array of most frequent emotions for given frequency table
+        const getMaxEmotion = object => {
+            return Object.keys(object).filter(x => {
+                 return object[x] == Math.max.apply(null, 
+                 Object.values(object));
+           });
+        };
+
+
+        const mostFrequent = getMaxEmotion(this.frequencies);
+
+        // case i: the whole list has a single most frequent
+        if (mostFrequent.length === 1) {
+            this.dominantEmotion = mostFrequent[0];
+            console.log(this);
+            return mostFrequent[0];
+        }
+
+        // find the frequencies in the last five songs from
+        // the most frequent in the whole list
+        const lastFiveFrequencies = emptyEmotionFrequencies(mostFrequent);
+        for (const song of this.songList.slice(0, 5)) {
+            if (song.hasOwnProperty('emotion') 
+                && lastFiveFrequencies.hasOwnProperty(song.emotion)) {
+                lastFiveFrequencies[song.emotion]++
+            }
+        }
+
+        const lastFiveMostFrequent = getMaxEmotion(lastFiveFrequencies);
+
+        // case ii: the last five has a single most frequent
+        if (lastFiveMostFrequent.length === 1) {
+            this.dominantEmotion = lastFiveMostFrequent[0];
+            console.log(this);
+            return lastFiveMostFrequent[0];
+        }
+
+        // case iii: return the latest emotion if tie within the last five
+        for (const song of this.songList) {
+            if (song.hasOwnProperty('emotion')
+                && lastFiveMostFrequent.hasOwnProperty(song.emotion)) {
+                this.dominantEmotion = song.emotion;
+                console.log(this);
+                return song.emotion;
+            }
+        }
+
+        // should never execute
+        this.dominantEmotion = '';
+        return '';
     }
 }
 
@@ -406,7 +462,14 @@ async function featuresFromIds(arr) {
 };
 
 function emotionFromFeatures(features) {
-    return emotions[Math.floor(Math.random()*emotions.length)];
+    const features_arr = [
+        features.acousticness, features.danceability, features.energy,
+        features.instrumentalness, features.liveness, features.speechiness,
+        features.valence, features.loudness, features.tempo
+    ]
+    const emotionIndex = knn_model.model.predict(features_arr);
+    return emotions[emotionIndex];
+
 }
 
 databaseInit();
@@ -431,8 +494,16 @@ for (session of sessions) {
 console.log(`emotion frequencies calculated!\n`);
 console.log(`${unfoundSongs} of ${totalSongs} not found`);
 
+console.log(knn_model.model.predict(
+    [0.281, 0.686, 0.731, 0.0219, 0.0964, 0.0428, 0.433, -6.765, 94.008]
+));
+
 Promise.resolve(accesTokenPromise).then( () => {
     for (session of sessions.slice(1, 10)) {
-        session.emotionsFromSearch();
+        session.calculateEmotionsFromSearch();
+    }
+}).then( () => {
+    for (const session of sessions.slice(1, 10)) {
+        session.getDominantEmotion();
     }
 });

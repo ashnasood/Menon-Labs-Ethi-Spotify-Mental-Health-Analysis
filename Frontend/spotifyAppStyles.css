@@ -65,6 +65,26 @@ body {
   display: inline-block;
 }
 
+.seeMoreBtn {
+  position: relative;
+  border-radius: 25px;
+  display: block;
+  background-color: inherit;
+  border: solid;
+  border-color: white;
+  color: white;
+  padding: 0.7% 2%;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-family: 'Oswald', sans-serif;
+  width: 10%;
+  top: 10%;
+  font-size: 1.5em;
+  left: 43%;
+  transition: 0.4s
+}
+
 ::-webkit-scrollbar {
   width: 20px;
 }

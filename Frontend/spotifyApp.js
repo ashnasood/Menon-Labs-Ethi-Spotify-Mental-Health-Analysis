@@ -55,8 +55,25 @@
 })(jQuery);
 
 $("#timeline-1").timeline();
+/*
+donutChart
+    .isAnimated(true)
+    .highlightSliceById(2)
+    .width(containerWidth)
+    .height(containerWidth)
+    .externalRadius(containerWidth/2.5)
+    .internalRadius(containerWidth/5)
+    .on('customMouseOver', function(data) {
+        legendChart.highlight(data.data.id);
+    })
+    .on('customMouseOut', function() {
+        legendChart.clearHighlight();
+    });
 
+donutContainer.datum(dataset).call(donutChart);
 
+legendContainer.datum(dataset).call(legendChart);
+*/
 var modal = document.getElementById("myModal");
 var btn = document.getElementById("myBtn");
 var span = document.getElementsByClassName("close")[0];

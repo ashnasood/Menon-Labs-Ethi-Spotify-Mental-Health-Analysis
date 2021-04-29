@@ -1,8 +1,8 @@
-const fs = require('fs');
-const readline = require('readline');
-const {performance} = require('perf_hooks');
+import * as d3 from d3
+/*
 const SpotifyWebApi = require('spotify-web-api-node');
 const knn_model = require('./KNN_Model.js');
+*/
 
 const spotifyApi = new SpotifyWebApi({
     clientId: '69e1c0e4539041d7917c217c4b6f94cb',

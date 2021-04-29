@@ -32,6 +32,11 @@ const emotions = [
     'Soothing', 'Upbeat', 'Vulnerable', 'Wistful'
 ]
 
+const colors = [
+    '#7dc438', '#a6e04f', '#ff920c', '#ff4500', '#3262bc',
+    '#0b6623', '#fff675', '#f2a0b9', '#a29ecd'
+]
+
 const emptyEmotionFrequencies = function (arr=emotions) {
     const dict = {};
     for (e of arr)
@@ -217,6 +222,14 @@ class ListeningSession {
         // should never execute
         this.dominantEmotion = '';
         return '';
+    }
+
+    getDonutDataset() {
+        const arr = [];
+        for (e in emotions) {
+            arr.push({name: e, quantity: this.frequencies[e]});
+        }
+        return arr;
     }
 }
 

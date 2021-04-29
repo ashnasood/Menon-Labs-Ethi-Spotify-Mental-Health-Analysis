@@ -33,8 +33,8 @@ const emotions = [
 ]
 
 const colors = [
-    '#7dc438', '#a6e04f', '#ff920c', '#ff4500', '#3262bc',
-    '#0b6623', '#fff675', '#f2a0b9', '#a29ecd'
+    '#78d6c2', '#7ee171', '#ff920c', '#ff4500', '#3262bc',
+    '#0b6623', '#fff675', '#f2a0b9', '#908cbd'
 ]
 
 const emptyEmotionFrequencies = function (arr=emotions) {
@@ -84,7 +84,7 @@ class ListeningSession {
      */
     constructor(songs) {
         this.size = songs.length;
-        this.time = songs[0].endTime;
+        this.time = songs[songs.length-1].endTime;
         this.songList = songs;
         this.frequencies = emptyEmotionFrequencies();
         this.unlabeledSongs = songs.length;

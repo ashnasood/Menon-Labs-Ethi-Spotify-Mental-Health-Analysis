@@ -66,23 +66,39 @@ body {
 }
 
 .seeMoreBtn {
-  position: relative;
-  border-radius: 25px;
-  display: block;
+  position: absolute;
   background-color: inherit;
+  color: white;
+  cursor: pointer;
+  padding: 0.9%;
+  bottom: 40%;
+  width: 50%;
+  text-align: center;
   border: solid;
   border-color: white;
-  color: white;
-  padding: 0.7% 2%;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-family: 'Oswald', sans-serif;
-  width: 10%;
-  top: 10%;
+  outline: none;
+  transition: 0.4s;
   font-size: 1.5em;
-  left: 43%;
-  transition: 0.4s
+  font-family: 'Oswald', sans-serif;
+  left: 25%;
+  border-radius: 25px;
+}
+
+.seeMoreBtn:hover {
+  position: absolute;
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  animation: gradient 15s ease infinite;
+  bottom: 35%;
+  background-size: 5000% 5000%;
+}
+
+.seeMoreBtn:after {
+  position: relative;
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+  border-radius: 25px;
 }
 
 ::-webkit-scrollbar {

@@ -1,4 +1,5 @@
-import * as d3 from d3
+import * as d3 from 'https://d3js.org/d3.v6.min.js'
+console.log('hello');
 /*
 const SpotifyWebApi = require('spotify-web-api-node');
 const knn_model = require('./KNN_Model.js');
@@ -14,7 +15,6 @@ const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
   function(data) {
     console.log('The access token expires in ' + data.body['expires_in']);
     console.log('The access token is ' + data.body['access_token']);
-  console.log(data);
 
     // Save the access token so that it's used in future calls
     spotifyApi.setAccessToken(data.body['access_token']);
@@ -23,9 +23,6 @@ const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
     console.log('Something went wrong when retrieving an access token', err);
   }
 );
-
-
-const throwErrorCb = (err) => {if (err) throw err;};
 
 const emotions = [
     'Calm', 'Chill', 'Energetic', 'Powerful', 'Sentimental',
@@ -488,7 +485,7 @@ function emotionFromFeatures(features) {
 databaseInit();
 console.log('database initialized!\n');
 
-history = getHistory(process.argv[2]);
+history = getHistory('shania_data');
 console.log('history read!');
 console.log(`${history.length} songs in history`);
 console.log();
@@ -507,9 +504,6 @@ for (session of sessions) {
 console.log(`emotion frequencies calculated!\n`);
 console.log(`${unfoundSongs} of ${totalSongs} not found`);
 
-console.log(knn_model.model.predict(
-    [0.281, 0.686, 0.731, 0.0219, 0.0964, 0.0428, 0.433, -6.765, 94.008]
-));
 
 Promise.resolve(accesTokenPromise).then( () => {
     for (session of sessions.slice(1, 10)) {

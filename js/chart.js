@@ -1,14 +1,16 @@
 /*
-const emotions = [
-    'Calm', 'Chill', 'Energetic', 'Powerful', 'Sentimental',
-    'Soothing', 'Upbeat', 'Vulnerable', 'Wistful'
-]
-
-const colors = [
-    '#78d6c2', '#7ee171', '#ff920c', '#ff4500', '#3262bc',
-    '#0b6623', '#fff675', '#f2a0b9', '#908cbd'
-]
-*/
+ *  List of emotions matched with the colors
+ *
+ *  Calm - #78D6C2
+ *  Chill - #7EE171
+ *  Energetic - #FF920C
+ *  Powerful - #FF4500
+ *  Sentimental - #3262BC
+ *  Soothing - #0B6623
+ *  Upbeat - #FFF675
+ *  Vulnerable - #F2A0B9
+ *  Wistful - #908CBD
+ */
 
 // Instantiate Bar Chart
 const barChart = britecharts.bar();
@@ -17,12 +19,13 @@ const colors = ['#ff920c', '#ff4500', '#0b6623',
      '#fff675', '#908cbd']
 
 // Create Dataset with proper shape
+// First entry appears last in the chart
 const barData = [
-    { name: 'Energetic', value: 5 },
-    { name: 'Powerful', value: 4 },
-    { name: 'Soothing', value: 7},
+    { name: 'Wistful', value: 2 },
     { name: 'Upbeat', value: 3 },
-    { name: 'Wistful', value: 2 }
+    { name: 'Soothing', value: 7},
+    { name: 'Powerful', value: 4 },
+    { name: 'Energetic', value: 5 }
 ];
 
 // Configure chart

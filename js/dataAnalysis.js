@@ -511,7 +511,7 @@ Promise.resolve(accesTokenPromise).then( () => {
         session.calculateEmotionsFromSearch();
     }
 }).then( () => {
-    for (const session of sessions.slice(1, 10)) {
+    for (const session of sessions.slice(0, 5)) {
         session.getDominantEmotion();
     }
 });

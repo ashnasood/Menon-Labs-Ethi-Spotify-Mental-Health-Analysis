@@ -1,10 +1,10 @@
 
 let session = [
     { trackName: "!", artistName: "Samey", emotion: "Energetic" },
-    { trackName: "! (The Song Formerly Known As)", artistName: "Regurgitator", emotion: "Energetic" },
-    { trackName: "!!De Repente!!", artistName: "Rosendo", emotion: "Energetic" },
-    { trackName: "!H.a.p.p.y!", artistName: "Dawid Podsiad\u0142o", emotion: "Chill" },
-    { trackName: "!I'll Be Back!", artistName: "Ril\u00e8s", emotion: "Energetic" }
+    { trackName: "(The Song Formerly Known As)", artistName: "Regurgitator", emotion: "Energetic" },
+    { trackName: "!De Repente!", artistName: "Rosendo", emotion: "Energetic" },
+    { trackName: "H.a.p.p.y", artistName: "Dawid Podsiad\u0142o", emotion: "Chill" },
+    { trackName: "I'll Be Back", artistName: "Ril\u00e8s", emotion: "Energetic" }
 ];
 
 function generateTableHead(table, data) {

@@ -1,39 +1,39 @@
-//'use strict';
+/*
+const emotions = [
+    'Calm', 'Chill', 'Energetic', 'Powerful', 'Sentimental',
+    'Soothing', 'Upbeat', 'Vulnerable', 'Wistful'
+]
 
-//const d3Selection = require('d3-selection');
-//const donut = require('./../../src/charts/donut');
-//const legend = require('./../../src/charts/legend');
+const colors = [
+    '#78d6c2', '#7ee171', '#ff920c', '#ff4500', '#3262bc',
+    '#0b6623', '#fff675', '#f2a0b9', '#908cbd'
+]
+*/
 
-let donutData1 = {
-  data:[
-    {name: "Shiny", id: 1, quantity: 86},
-    {name: "Blazing", id: 2, quantity: 300},
-    {name: "Dazzling", id: 3, quantity: 276},
-    {name: "Radiant", id: 4, quantity: 195},
-    {name: "Sparkling", id: 5, quantity: 36},
-    {name: "Other", id: 0, quantity: 814}
-  ]
-};
+// Instantiate Bar Chart
+const barChart = britecharts.bar();
+const container = d3.select('.bar-container');
+const colors = ['#ff920c', '#ff4500', '#0b6623',
+     '#fff675', '#908cbd']
 
-function createDonutChart() {
-  let donutChart = britecharts.donut(),
-  legendChart = britecharts.legend(),
-  legendContainer;
+// Create Dataset with proper shape
+const barData = [
+    { name: 'Energetic', value: 5 },
+    { name: 'Powerful', value: 4 },
+    { name: 'Soothing', value: 7},
+    { name: 'Upbeat', value: 3 },
+    { name: 'Wistful', value: 2 }
+];
 
-  donutChart
-    .width(400)
-    .height(300);
-  
-  legendChart
-    .width(300)
+// Configure chart
+barChart
+    .isAnimated(true)
+    .colorSchema(colors)
+    .enableLabels(true)
+    .labelsNumberFormat('.0')
+    .margin({ left: 100 })
+    .isHorizontal(true)
     .height(200)
-    .numberFormat('s');
-  
-  d3.select('.js-donut-chart-container').datum(donutData1.data).call(donutChart);
-  legendContainer = d3.select('.js-legend-chart-container');
-  legendContainer.datum(donutData1.data).call(legendChart);
+    .width(300);
 
-}
-
-
-//createDonutChart();
+container.datum(barData).call(barChart);

@@ -1,0 +1,491 @@
+const SpotifyWebApi = require('spotify-web-api-node');
+const knn_model = require('./KNN_Model.js');
+const fs = require('fs');
+
+
+const spotifyApi = new SpotifyWebApi({
+    clientId: '69e1c0e4539041d7917c217c4b6f94cb',
+    clientSecret: 'ffd609f69b4940eca3ee212b75de03b5',
+});
+
+// Retrieve an access token.
+const accesTokenPromise = spotifyApi.clientCredentialsGrant().then(
+  function(data) {
+    console.log('The access token expires in ' + data.body['expires_in']);
+    console.log('The access token is ' + data.body['access_token']);
+
+    // Save the access token so that it's used in future calls
+    spotifyApi.setAccessToken(data.body['access_token']);
+  },
+  function(err) {
+    console.log('Something went wrong when retrieving an access token', err);
+  }
+);
+
+const emotions = [
+    'Calm', 'Chill', 'Energetic', 'Powerful', 'Sentimental',
+    'Soothing', 'Upbeat', 'Vulnerable', 'Wistful'
+]
+
+const colors = [
+    '#78d6c2', '#7ee171', '#ff920c', '#ff4500', '#3262bc',
+    '#0b6623', '#fff675', '#f2a0b9', '#908cbd'
+]
+
+const emptyEmotionFrequencies = function (arr=emotions) {
+    const dict = {};
+    for (e of arr)
+        dict[e] = 0;
+    return dict;
+}
+
+// from [Ramki Pitchala](https://medium.com/swlh/set-a-time-limit-on-async-actions-in-javascript-567d7ca018c2)
+async function fulfillWithTimeLimit(timeLimit, task, failureValue){
+    let timeout;
+    const timeoutPromise = new Promise((resolve, reject) => {
+        timeout = setTimeout(() => {
+            resolve(failureValue);
+        }, timeLimit)
+    });
+    const response = await Promise.race([task, timeoutPromise]);
+    if(timeout){ 
+        clearTimeout(timeout);
+    }
+    return response;
+}
+
+
+/**
+ * @class ListeningSession utility object for all operations involving a session
+ *
+ * @field {number} size the number of songs in the session
+ * @field {Date} time the date and time that the first song ended
+ * @field {Array[Object]} songList the list of songs listened to during the session
+ *      each object represents a single song and has the following fields:
+ *          - endTime {Date}
+ *          - trackName {String}
+ *          - artistName {String}
+ *          - msPlayed {number}
+ *      array is sorted by endTime, with later times first
+ * @field {Object} frequencies a frequency table for each emotion, updated as emotions are found
+ * @field {number} unlabeledSongs the quantity of songs that are not yet labeled with an emotion
+ * @field {String} dominantEmotion the dominant emotion for the entire session
+ */
+class ListeningSession {
+    /**
+     * @param {Array[Object]} songs the list of songs to be part of the session
+     *      each object should represent a single song and have the following fields:
+     *          - endTime {Date}
+     *          - trackName {String}
+     *          - artistName {String}
+     *          - msPlayed {number}
+     *      array should be sorted by endTime, with later times first
+     */
+    constructor(songs) {
+        this.size = songs.length;
+        this.time = songs[songs.length-1].endTime;
+        this.songList = songs;
+        this.frequencies = emptyEmotionFrequencies();
+        this.unlabeledSongs = songs.length;
+    }
+
+    calculateEmotionsFromDatabase() {
+        for (const song of this.songList) {
+            let e = emotionFromDatabase(song);
+            if (e) {
+                this.frequencies[e] += 1;
+                song.emotion = e;
+                this.unlabeledSongs--;
+            }
+        }
+
+        return this.frequencies;
+    }
+
+    /**
+     * Assign emotion labels to any songs not already labeled
+     */
+    async calculateEmotionsFromSearch() {
+        for (const song of this.songList) {
+            if (!song.hasOwnProperty('emotion')) {
+                const id = await fulfillWithTimeLimit(3000, searchForId(song), '');
+                if (id) {
+                    song.id = id;
+                }
+            }
+        }
+
+        let ids = [];
+        for (const song of this.songList) {
+            if (song.hasOwnProperty('id'))
+                ids.push(song.id);
+        }
+
+
+        let features = [];
+
+        while (ids.length > 100) {
+            features = features.concat(await featuresFromIds(ids.slice(0, 100)));
+            ids = data.slice(100);
+        }
+        features = features.concat(await featuresFromIds(ids));
+
+
+        for (const song of this.songList) {
+            if (song.hasOwnProperty('id') && song.id === features[0].id) {
+                song.emotion = emotionFromFeatures(features[0]);
+                this.unlabeledSongs--;
+                this.frequencies[song.emotion]++;
+                features = features.slice(1);
+            }
+        }
+
+    }
+
+    /**
+     * Find and return the dominant emotion for ``this``
+     *
+     * Also logs ``this`` to the console.
+     *
+     * the dominant emotion is defined as:
+     *      - case i: the most frequent emotion
+     *      - case ii: the most frequent within the last five songs of any emo
+     *              emotions tied for most frequent
+     *      - case iii: the most last emotion of any emotions still tied
+     */
+    getDominantEmotion() {
+
+        // get array of most frequent emotions for given frequency table
+        const getMaxEmotion = object => {
+            return Object.keys(object).filter(x => {
+                 return object[x] == Math.max.apply(null, 
+                 Object.values(object));
+           });
+        };
+
+
+        const mostFrequent = getMaxEmotion(this.frequencies);
+
+        // case i: the whole list has a single most frequent
+        if (mostFrequent.length === 1) {
+            this.dominantEmotion = mostFrequent[0];
+            console.log(this);
+            return mostFrequent[0];
+        }
+
+        // find the frequencies in the last five songs from
+        // the most frequent in the whole list
+        const lastFiveFrequencies = emptyEmotionFrequencies(mostFrequent);
+        for (const song of this.songList.slice(0, 5)) {
+            if (song.hasOwnProperty('emotion') 
+                && lastFiveFrequencies.hasOwnProperty(song.emotion)) {
+                lastFiveFrequencies[song.emotion]++
+            }
+        }
+
+        const lastFiveMostFrequent = getMaxEmotion(lastFiveFrequencies);
+
+        // case ii: the last five has a single most frequent
+        if (lastFiveMostFrequent.length === 1) {
+            this.dominantEmotion = lastFiveMostFrequent[0];
+            console.log(this);
+            return lastFiveMostFrequent[0];
+        }
+
+        // case iii: return the latest emotion if tie within the last five
+        for (const song of this.songList) {
+            if (song.hasOwnProperty('emotion')
+                && lastFiveMostFrequent.hasOwnProperty(song.emotion)) {
+                this.dominantEmotion = song.emotion;
+                console.log(this);
+                return song.emotion;
+            }
+        }
+
+        // should never execute
+        this.dominantEmotion = '';
+        return '';
+    }
+}
+
+/**
+ * Get all songs the user has listened to from their data
+ *
+ * @param {String} folderPath the path to the folder of downloaded data
+ * @return {Array[Object]} all songs in the streaming history
+ *      each object represents a single song and has the following fields:
+ *          - endTime {Date}
+ *          - trackName {String}
+ *          - artistName {String}
+ *          - msPlayed {number}
+ *      array is sorted by endTime, with later times first
+ */
+function getHistory(folderPath) {
+    try {
+        const throwErrorCb = (err) => { throw err; };
+        const files = fs.readdirSync(folderPath, throwErrorCb);
+
+        // find streaming history files
+        const historyFiles = [];
+        for (const file of files) {
+            if (file.includes('StreamingHistory')) {
+                historyFiles.push(file);
+            }
+        }
+
+        // add all streaming history entries into giant array
+        let history = [];
+        for (const file of historyFiles) {
+            let data_str = fs.readFileSync(folderPath+'/'+file, {encoding: 'utf8'})
+            const arr = JSON.parse(data_str);
+            history = history.concat(arr);
+        }
+
+        // convert endTime to a proper datetime
+        for (let entry of history) {
+            dateAndTime = entry.endTime.split(' ');
+            dateParts = dateAndTime[0].split('-');
+            timeParts = dateAndTime[1].split(':');
+            entry.endTime = new Date(
+                parseInt(dateParts[0]), parseInt(dateParts[1]), parseInt(dateParts[2]),
+                parseInt(timeParts[0]), parseInt(timeParts[1]), 0
+            );
+
+        }
+
+        // sort history by end time
+        history.sort((a, b) => b.endTime - a.endTime);
+        return history;
+
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+
+/**
+ * Divide straming history into listening sessions
+ *
+ * A listening session meets the following conditions:
+ *      - each track was played for between 30 seconds and 10 minutes, inclusive
+ *      - each pair of consecutive tracks was played within 30 minutes of each other, inclusive
+ *      - the session contains at least 10 songs meeting the above two criteria
+ *
+ * @param {Array[Object]} history all the songs a user has listened to
+ *      each object should represent a single song and have the following fields:
+ *          - endTime {Date}
+ *          - trackName {String}
+ *          - artistName {String}
+ *          - msPlayed {number}
+ *      array should be sorted by endTime, with later times first
+ *
+ * @return {Array[ListeningSession]} all the valid listening sessions from the user's data
+ *      array is sorted by endTime of final song in each session, with later times first
+ */
+function getListeningSessions(history) {
+
+    // copy tracks with > 30s of time played into new array
+    tracks = [];
+    for (track of history) {
+        if (track.msPlayed >= 30*1000 && track.msPlayed <= 10*60*1000)
+            tracks.push(track);
+    }
+
+    // divide tracks into groups of songs with < 30m between each consecutive song
+    groups = [[]];
+    for (let i=0; i < tracks.length-2; i++) {
+        groups[groups.length-1].push(tracks[i]);
+        const diff = Math.abs(tracks[i].endTime - tracks[i+1].endTime);
+        if (diff > 30*60*1000) {
+            groups.push([]);
+        }
+    }
+
+    // create session objects for all groups with > 10 songs
+    sessions = [];
+    for (group of groups) {
+        if (group.length >= 10) {
+            sessions.push(new ListeningSession(group));
+        }
+    }
+
+    return sessions;
+}
+
+let dbSongs = [];
+const cmpSong = function (a, b) { 
+    return a.trackName.localeCompare(b.trackName) || a.artistName.localeCompare(b.artistName); 
+};
+
+/**
+ * Initialize the database from './song_info.json'
+ */
+function databaseInit() {
+    data_str = fs.readFileSync('song_info.json', {encoding: 'utf8'})
+    dbSongs = JSON.parse(data_str);
+    dbSongs.sort(cmpSong);
+}
+
+/**
+ * Search for the emotion of a song in the database
+ *
+ * @param {Object} song the song to search for
+ *      must minimally contain:
+ *      - trackName
+ *      - artistName
+ * @return {String} the emotion from ``emotions`` or an empty string if not found
+ */
+function emotionFromDatabase(song) {
+
+    const binarySearch = function (song, l, r) {
+        if (r < l || l < 0 || r > dbSongs.length)
+            return -1;
+
+        let mid = l + Math.floor((r-l)/2);
+        let cmp = cmpSong(song, dbSongs[mid]);
+
+        if (cmp === 0)
+            return mid;
+        else if (cmp > 0)
+            return binarySearch(song, mid+1, r);
+        else
+            return binarySearch(song, l, mid-1);
+    }
+
+    const index = binarySearch(song, 0, dbSongs.length);
+    if (index === -1)
+        return "";
+    else
+        return dbSongs[index].emotion;
+}
+
+idCache = {};
+
+/**
+ * Search for the Spotify id of a given song using spotify web api
+ *
+ * @param {Object} song the song to search for
+ *      must minimally contain:
+ *      - trackName
+ *      - artistName
+ * @return {String} the id or an empty string if not found
+ */
+async function searchForId(song) {
+    const query = `track:${song.trackName} artist:${song.artistName}`
+
+    if (idCache.hasOwnProperty(query))
+        return idCache[query];
+
+    try {
+        const data = await spotifyApi.searchTracks(query);
+
+        const result = data.body.tracks.items[0];
+        if (result) {
+            idCache[query] = result.id;
+            return result.id;
+        }
+        else {
+            idCache[query] = '';
+            return '';
+        }
+
+    }
+    catch (error) {
+        if (error.statusCode === 429) {
+            const time = error.headers['Retry-After'] * 1000;
+            return setTimeout(() => { return searchForId(song); }, time);
+        }
+        else if (error.code === 'ECONNRESET') {
+            return setTimeout(() => { return searchForId(song); }, 1000);
+        }
+        else {
+            console.error(error);
+            return "";
+        }
+    }
+}
+
+/**
+ * Request audio features from array or features
+ *
+ * @param {Array[String]} arr a list of ids with length <= 100
+ * @returns {Array[Object]} a list of objects representing features for each song
+ * @see spotify web api documentation for more info on features object
+ * @note return value is guaranteed to be in the same order, as input array,
+ *      but certain ids may be skipped
+ */
+async function featuresFromIds(arr) {
+    try {
+        const features = [];
+        const data = await spotifyApi.getAudioFeaturesForTracks(arr);
+        for (const info of data.body.audio_features) {
+            if (info)
+                features.push(info);
+        }
+
+        return features;
+    }
+    catch (error) {
+        if (error.statusCode === 429) {
+            const time = error.headers['Retry-After'] * 1000;
+            return setTimeout(() => { return featuresFromIds(arr); }, time);
+        }
+        else if (error.code === 'ECONNRESET') {
+            return setTimeout(() => { return featuresFromIds(arr); }, 1000);
+        }
+        else {
+            console.error(error);
+            featuresFromIds(arr);
+        }
+    }
+};
+
+/**
+ * Use KNN model to determine the emotion from the given features.
+ *
+ * @param {Object} features the object representing Spotify audio features for a song
+ * @see spotify web api documentation for more info on features
+ *
+ * @return {String} the emotion from ``emotions`` which the song is predicted to have
+ */
+function emotionFromFeatures(features) {
+    const features_arr = [
+        features.acousticness, features.danceability, features.energy,
+        features.instrumentalness, features.liveness, features.speechiness,
+        features.valence, features.loudness, features.tempo
+    ]
+    const emotionIndex = knn_model.model.predict(features_arr);
+    return emotions[emotionIndex];
+
+}
+
+databaseInit();
+console.log('database initialized!\n');
+
+history = getHistory('my_data');
+console.log('history read!');
+console.log(`${history.length} songs in history`);
+console.log();
+
+sessions = getListeningSessions(history);
+console.log('sessions parsed!');
+console.log(`${sessions.length} valid sessions\n`);
+
+let totalSongs = 0;
+let unfoundSongs = 0;
+for (session of sessions) {
+    session.calculateEmotionsFromDatabase();
+    totalSongs += session.size;
+    unfoundSongs += session.unlabeledSongs;
+}
+console.log(`emotion frequencies calculated!\n`);
+console.log(`${unfoundSongs} of ${totalSongs} not found`);
+
+
+Promise.resolve(accesTokenPromise).then( () => {
+    for (session of sessions) {
+        session.calculateEmotionsFromSearch().then( () => {
+            session.getDominantEmotion();
+        });
+    }
+});

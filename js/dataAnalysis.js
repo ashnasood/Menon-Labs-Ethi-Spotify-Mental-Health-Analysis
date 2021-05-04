@@ -1,10 +1,7 @@
-import * as d3 from 'https://d3js.org/d3.v6.min.js'
-import * as SpotifyWebApi from './spotify-web-api.js'
-import * as knn_model from './KNN_Model.js'
-/*
 const SpotifyWebApi = require('spotify-web-api-node');
 const knn_model = require('./KNN_Model.js');
-*/
+const fs = require('fs');
+
 
 const spotifyApi = new SpotifyWebApi({
     clientId: '69e1c0e4539041d7917c217c4b6f94cb',
@@ -57,6 +54,7 @@ async function fulfillWithTimeLimit(timeLimit, task, failureValue){
     return response;
 }
 
+
 /**
  * @class ListeningSession utility object for all operations involving a session
  *
@@ -97,21 +95,6 @@ class ListeningSession {
                 this.unlabeledSongs--;
             }
         }
-        /*
-        this.unfoundIndices = [];
-        for (let i=0; i<this.songList.length; i++)
-        {
-            let e = emotionFromDatabase(this.songList[i]);
-            if (e) {
-                if (e === 'Party Music')
-                    e = 'Party';
-                this.frequencies[e] += 1;
-            }
-            else {
-                this.unfoundIndices.push(i);
-            }
-        }
-        */
 
         return this.frequencies;
     }
@@ -151,21 +134,6 @@ class ListeningSession {
             }
         }
 
-        /*
-        const songsToSearch = [];
-        for (index of this.unfoundIndices)
-            songsToSearch.push(this.songList(index));
-        this.unfoundIndices = [];
-
-        const ids = [];
-        for (let i=0; i < songsToSearch.length; i++) {
-            id = searchForId(songsToSearch[i]);
-            if (id)
-                ids.push(id);
-            else
-                this.unfoundIndices.push(i);
-        }
-        */
     }
 
     getDominantEmotion() {
@@ -184,7 +152,6 @@ class ListeningSession {
         // case i: the whole list has a single most frequent
         if (mostFrequent.length === 1) {
             this.dominantEmotion = mostFrequent[0];
-            console.log(this);
             return mostFrequent[0];
         }
 
@@ -203,7 +170,6 @@ class ListeningSession {
         // case ii: the last five has a single most frequent
         if (lastFiveMostFrequent.length === 1) {
             this.dominantEmotion = lastFiveMostFrequent[0];
-            console.log(this);
             return lastFiveMostFrequent[0];
         }
 
@@ -212,7 +178,6 @@ class ListeningSession {
             if (song.hasOwnProperty('emotion')
                 && lastFiveMostFrequent.hasOwnProperty(song.emotion)) {
                 this.dominantEmotion = song.emotion;
-                console.log(this);
                 return song.emotion;
             }
         }
@@ -245,6 +210,7 @@ class ListeningSession {
  */
 function getHistory(folderPath) {
     try {
+        const throwErrorCb = (err) => { throw err; };
         const files = fs.readdirSync(folderPath, throwErrorCb);
 
         // find streaming history files
@@ -407,27 +373,6 @@ async function searchForId(song) {
             idCache[query] = '';
             return '';
         }
-        /*
-        if (result === undefined) {
-            idCache[query] = "";
-            return "";
-        }
-
-        if (matchSong(song, {trackName: result.name, artistName: result.artists[0].name})) {
-            idCache[query] = result.id;
-            return result.id
-        }
-        else {
-            console.log('failed to find song:');
-            console.log(song);
-            console.log('found:');
-            console.log(result.name);
-            console.log(result.artists[0].name);
-
-            idCache[query] = "";
-            return "";
-        }
-        */
 
     }
     catch (error) {
@@ -486,7 +431,7 @@ function emotionFromFeatures(features) {
 databaseInit();
 console.log('database initialized!\n');
 
-history = getHistory('shania_data');
+history = getHistory('my_data');
 console.log('history read!');
 console.log(`${history.length} songs in history`);
 console.log();
@@ -507,11 +452,11 @@ console.log(`${unfoundSongs} of ${totalSongs} not found`);
 
 
 Promise.resolve(accesTokenPromise).then( () => {
-    for (session of sessions.slice(1, 10)) {
-        session.calculateEmotionsFromSearch();
-    }
-}).then( () => {
-    for (const session of sessions.slice(0, 5)) {
-        session.getDominantEmotion();
+    for (session of sessions) {
+        session.calculateEmotionsFromSearch().then( () => {
+            session.getDominantEmotion();
+        }).then( () => {
+            console.log(session)
+        });
     }
 });
